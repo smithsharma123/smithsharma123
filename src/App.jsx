@@ -1,13 +1,9 @@
- import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ArrowUpRight,
   ArrowDown,
   MapPin,
   Mail,
-  Linkedin,
-  Github,
-  Instagram,
-  Facebook,
   Check,
   Copy,
   Leaf,
@@ -30,13 +26,81 @@ import {
 } from 'lucide-react';
 
 // ============================================================================
-// IMMUTABLE PROFILE ASSET CONFIGURATION (LOCKED — CANNOT BE CHANGED)
+// SELF-CONTAINED BRAND SVG ICONS (COMPATIBLE WITH ALL LUCIDE-REACT VERSIONS)
+// ============================================================================
+const LinkedinIcon = ({ className = 'w-4 h-4' }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    aria-hidden="true"
+  >
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect width="4" height="12" x="2" y="9" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+);
+
+const GithubIcon = ({ className = 'w-4 h-4' }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    aria-hidden="true"
+  >
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </svg>
+);
+
+const InstagramIcon = ({ className = 'w-4 h-4' }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    aria-hidden="true"
+  >
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+  </svg>
+);
+
+const FacebookIcon = ({ className = 'w-4 h-4' }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    aria-hidden="true"
+  >
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+  </svg>
+);
+
+// ============================================================================
+// IMMUTABLE PROFILE ASSET CONFIGURATION (FIXED FOREVER ONCE SET)
 // ============================================================================
 const LOCKED_PORTRAIT_CONFIG = Object.freeze({
-  src: 'Smith sharma jpg_5.jpg',
+  src: '/smith-sharma.jpg',
   alt: 'Smith Sharma — Founder of YANVI and Aspiring MERN Stack Developer'
 });
-const PORTRAIT_STORAGE_KEY = 'smith_sharma_locked_portrait_v2';
+const PORTRAIT_STORAGE_KEY = 'smith_sharma_permanent_portrait_v3';
 
 // ============================================================================
 // CUSTOM HOOK: SCROLL-TRIGGERED REVEAL ANIMATION
@@ -147,12 +211,12 @@ function MagneticButton({ children, className = '', onClick, href, ...props }) {
 }
 
 // ============================================================================
-// COMPONENT: LOCKED PORTRAIT RENDERER (ONE-TIME INSERT + PERMANENT LOCK)
+// COMPONENT: LOCKED PORTRAIT RENDERER (ONE-TIME UPLOAD -> PERMANENT LOCK)
 // ============================================================================
 function LockedPortraitImage({
   portraitSrc,
-  onInsertPhoto,
-  allowInsertButton = false,
+  onUploadAndLock,
+  showUploadOverlay = false,
   className = '',
   style
 }) {
@@ -169,7 +233,7 @@ function LockedPortraitImage({
     const reader = new FileReader();
     reader.onload = (ev) => {
       if (typeof ev.target?.result === 'string') {
-        onInsertPhoto?.(ev.target.result);
+        onUploadAndLock?.(ev.target.result);
       }
     };
     reader.readAsDataURL(file);
@@ -182,18 +246,18 @@ function LockedPortraitImage({
         style={style}
       >
         <span className="font-display font-bold text-2xl tracking-wider text-[#93C5FD]">SS</span>
-        {allowInsertButton && (
+        {showUploadOverlay && (
           <>
-            <p className="font-mono-tech text-[11px] text-[#CBD5E1] mt-2 max-w-[210px] leading-relaxed">
-              Insert your photo once to lock it across your entire portfolio.
+            <p className="font-mono-tech text-[11px] text-[#CBD5E1] mt-2 max-w-[220px] leading-relaxed">
+              Upload your photo once. It will automatically fix and lock forever across your site.
             </p>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#60A5FA] hover:bg-[#93C5FD] text-[#0B1324] font-mono-tech text-[11px] font-semibold uppercase tracking-wider shadow-lg transition-all"
+              className="mt-3.5 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#60A5FA] hover:bg-[#93C5FD] text-[#08101E] font-mono-tech text-[11px] font-bold uppercase tracking-wider shadow-lg transition-transform hover:scale-105"
             >
               <Upload className="w-3.5 h-3.5" />
-              <span>Insert My Photo</span>
+              <span>Upload &amp; Lock Photo</span>
             </button>
             <input
               ref={fileInputRef}
@@ -209,15 +273,36 @@ function LockedPortraitImage({
   }
 
   return (
-    <img
-      src={portraitSrc}
-      alt={LOCKED_PORTRAIT_CONFIG.alt}
-      draggable={false}
-      onError={() => setImgFailed(true)}
-      onContextMenu={(e) => e.preventDefault()}
-      style={style}
-      className={`locked-portrait-img ${className}`}
-    />
+    <div className="relative w-full h-full">
+      <img
+        src={portraitSrc}
+        alt={LOCKED_PORTRAIT_CONFIG.alt}
+        draggable={false}
+        onError={() => setImgFailed(true)}
+        onContextMenu={(e) => e.preventDefault()}
+        style={style}
+        className={`locked-portrait-img ${className}`}
+      />
+      {showUploadOverlay && (
+        <div className="absolute top-3.5 right-3.5 z-30">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0B1324]/85 hover:bg-[#60A5FA] backdrop-blur-md border border-[#60A5FA]/50 text-[#93C5FD] hover:text-[#08101E] font-mono-tech text-[10px] font-semibold uppercase tracking-wider shadow-lg transition-all"
+          >
+            <Upload className="w-3 h-3" />
+            <span>Upload &amp; Fix Forever</span>
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -229,7 +314,7 @@ export default function App() {
   const [navyMode, setNavyMode] = useState('midnight');
   const isLight = navyMode === 'coastal';
 
-  // Fixed Permanent Portrait Photo State (Locked to Smith sharma jpg_5.jpg)
+  // Permanent Locked Portrait Photo State (Once uploaded, locked forever)
   const [portraitSrc, setPortraitSrc] = useState(() => {
     try {
       return localStorage.getItem(PORTRAIT_STORAGE_KEY) || LOCKED_PORTRAIT_CONFIG.src;
@@ -237,7 +322,7 @@ export default function App() {
       return LOCKED_PORTRAIT_CONFIG.src;
     }
   });
-  const [isPortraitLocked, setIsPortraitLocked] = useState(() => {
+  const [isPortraitFixedForever, setIsPortraitFixedForever] = useState(() => {
     try {
       return Boolean(localStorage.getItem(PORTRAIT_STORAGE_KEY));
     } catch {
@@ -245,15 +330,15 @@ export default function App() {
     }
   });
 
-  const handleInsertAndLockPhoto = (dataUrl) => {
+  const handleUploadAndFixForever = (dataUrl) => {
     setPortraitSrc(dataUrl);
-    setIsPortraitLocked(true);
+    setIsPortraitFixedForever(true);
     try {
       localStorage.setItem(PORTRAIT_STORAGE_KEY, dataUrl);
     } catch {
-      // Keep in active session memory if file exceeds quota
+      // Keep active in memory if image exceeds browser storage limit
     }
-    triggerToast('Photo inserted and permanently locked across your portfolio.');
+    triggerToast('Photo uploaded and locked forever! No one can change or delete it.');
   };
 
   // Navigation & Scroll Telemetry State
@@ -316,7 +401,7 @@ export default function App() {
 
   const triggerToast = (msg) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3200);
+    setTimeout(() => setToastMessage(null), 3500);
   };
 
   // Keyboard shortcut listener for Cmd/Ctrl + K and Escape
@@ -924,25 +1009,25 @@ export default function App() {
       name: 'LinkedIn',
       handle: 'Smith Sharma',
       href: 'https://www.linkedin.com/in/smith-sharma-8432a8358?utm_source=share_via&utm_content=profile&utm_medium=member_android',
-      icon: Linkedin
+      icon: LinkedinIcon
     },
     {
       name: 'GitHub',
       handle: 'smithsharma123/smith123',
       href: 'https://github.com/smithsharma123/smith123',
-      icon: Github
+      icon: GithubIcon
     },
     {
       name: 'Instagram',
       handle: '@smith_sharma_02',
       href: 'https://www.instagram.com/smith_sharma_02/',
-      icon: Instagram
+      icon: InstagramIcon
     },
     {
       name: 'Facebook',
       handle: 'smith.sharma.568632',
       href: 'https://www.facebook.com/smith.sharma.568632/',
-      icon: Facebook
+      icon: FacebookIcon
     }
   ];
 
@@ -1311,10 +1396,12 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-5 sm:px-8 flex items-center justify-between">
           {/* Editorial Monogram with Locked Photo */}
           <a href="#hero" className="flex items-center gap-3 group">
-            <LockedPortraitImage
-              portraitSrc={portraitSrc}
-              className="w-9 h-9 rounded-lg object-cover object-top border border-[#60A5FA]/60 shadow-md"
-            />
+            <div className="w-9 h-9 rounded-lg overflow-hidden border border-[#60A5FA]/60 shadow-md shrink-0">
+              <LockedPortraitImage
+                portraitSrc={portraitSrc}
+                className="w-full h-full object-cover object-top"
+              />
+            </div>
             <div className="flex flex-col">
               <span className={`font-display font-bold text-sm tracking-wide ${textPrimary}`}>
                 SMITH SHARMA
@@ -1511,7 +1598,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Right Interactive 3D Tilt Portrait Card with Deep Soft Shadow & One-Time Photo Insert */}
+            {/* Right Interactive 3D Tilt Portrait Card with Deep Soft Shadow & One-Time Upload Lock */}
             <div className="lg:col-span-5 hero-stagger-3">
               <div
                 onMouseMove={handlePortraitMouseMove}
@@ -1537,8 +1624,8 @@ export default function App() {
                   <div className="relative aspect-[4/5] w-full overflow-hidden bg-gradient-to-b from-[#162C50] via-[#111C33] to-[#0B1324]">
                     <LockedPortraitImage
                       portraitSrc={portraitSrc}
-                      onInsertPhoto={handleInsertAndLockPhoto}
-                      allowInsertButton={!isPortraitLocked}
+                      onUploadAndLock={handleUploadAndFixForever}
+                      showUploadOverlay={!isPortraitFixedForever}
                       className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.05]"
                     />
 
@@ -1557,7 +1644,7 @@ export default function App() {
                     <div className="absolute bottom-3.5 left-4 z-20 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0B1324]/85 backdrop-blur-md border border-[#60A5FA]/45 font-mono-tech text-[10px] text-[#93C5FD] uppercase tracking-wider shadow-lg">
                         <Lock className="w-2.5 h-2.5 text-[#60A5FA]" />
-                        <span>Pokhara · Founder &amp; Builder</span>
+                        <span>{isPortraitFixedForever ? 'Fixed Forever · Locked' : 'Pokhara · Founder & Builder'}</span>
                       </span>
                     </div>
                   </div>
@@ -1662,10 +1749,12 @@ export default function App() {
                 onContextMenu={(e) => e.preventDefault()}
                 className={`group p-4 rounded-2xl ${bgCard} border hover:border-[#60A5FA]/60 transition-colors flex items-center gap-4 select-none`}
               >
-                <LockedPortraitImage
-                  portraitSrc={portraitSrc}
-                  className="w-20 h-24 rounded-xl object-cover object-top border border-[#60A5FA]/50 shadow-[0_10px_25px_-6px_rgba(4,10,24,0.65)] shrink-0"
-                />
+                <div className="w-20 h-24 rounded-xl overflow-hidden border border-[#60A5FA]/50 shadow-[0_10px_25px_-6px_rgba(4,10,24,0.65)] shrink-0">
+                  <LockedPortraitImage
+                    portraitSrc={portraitSrc}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
                 <div className="space-y-1">
                   <span className={`font-mono-tech text-[10px] uppercase tracking-widest ${accentText} block`}>
                     PROFILE IDENTITY
@@ -2085,10 +2174,12 @@ export default function App() {
                 className="p-6 rounded-2xl bg-[#60A5FA] text-[#08101E] shadow-[0_18px_38px_-12px_rgba(96,165,250,0.45)] select-none"
               >
                 <div className="flex items-center gap-3 mb-2.5">
-                  <LockedPortraitImage
-                    portraitSrc={portraitSrc}
-                    className="w-11 h-11 rounded-full object-cover object-top border-2 border-[#08101E] shadow-md shrink-0"
-                  />
+                  <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-[#08101E] shadow-md shrink-0">
+                    <LockedPortraitImage
+                      portraitSrc={portraitSrc}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
                   <div>
                     <span className="font-mono-tech text-[10px] font-bold uppercase tracking-widest block">
                       FOUNDER&apos;S NOTE · SMITH SHARMA
@@ -2473,10 +2564,12 @@ export default function App() {
                 onContextMenu={(e) => e.preventDefault()}
                 className={`flex items-center gap-4 p-4 rounded-2xl ${bgCard} border select-none`}
               >
-                <LockedPortraitImage
-                  portraitSrc={portraitSrc}
-                  className="w-16 h-16 rounded-2xl object-cover object-top border border-[#60A5FA]/50 shadow-[0_10px_24px_-6px_rgba(4,10,24,0.65)] shrink-0"
-                />
+                <div className="w-16 h-16 rounded-2xl overflow-hidden border border-[#60A5FA]/50 shadow-[0_10px_24px_-6px_rgba(4,10,24,0.65)] shrink-0">
+                  <LockedPortraitImage
+                    portraitSrc={portraitSrc}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
                 <div>
                   <p className={`font-display font-bold text-base ${textPrimary}`}>Smith Sharma</p>
                   <p className={`font-mono-tech text-[11px] ${accentText}`}>
@@ -2655,10 +2748,12 @@ export default function App() {
             onContextMenu={(e) => e.preventDefault()}
             className="flex items-center gap-4 select-none"
           >
-            <LockedPortraitImage
-              portraitSrc={portraitSrc}
-              className="w-12 h-12 rounded-xl object-cover object-top border border-[#60A5FA]/50 shadow-[0_8px_20px_-4px_rgba(4,10,24,0.65)] shrink-0"
-            />
+            <div className="w-12 h-12 rounded-xl overflow-hidden border border-[#60A5FA]/50 shadow-[0_8px_20px_-4px_rgba(4,10,24,0.65)] shrink-0">
+              <LockedPortraitImage
+                portraitSrc={portraitSrc}
+                className="w-full h-full object-cover object-top"
+              />
+            </div>
             <div>
               <p className={`font-display font-bold text-base ${textPrimary}`}>
                 Smith Sharma — A Developer in Progress. An Entrepreneur by Vision. A Builder of Possibilities.
